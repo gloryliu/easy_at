@@ -1,0 +1,3 @@
+include ':eastat'
+include ':app'
+rootProject.name = "easy_at"
