@@ -8,7 +8,7 @@ import android.text.Spannable;
  * @date 12/15/20 6:21 PM
  * @desc
  */
-class SelectionSpanWatcher<T> extends SpanWatcherAdapter{
+public class SelectionSpanWatcher<T> extends SpanWatcherAdapter{
     private Class<T> kClass;
     private int selStart = 0;
     private int selEnd = 0;
@@ -21,11 +21,25 @@ class SelectionSpanWatcher<T> extends SpanWatcherAdapter{
     public void onSpanChanged(Spannable text, Object what, int ostart, int oend, int nstart, int nend) {
         if(Selection.SELECTION_END.equals(what) && selEnd != nstart){
             selEnd = nstart;
-            text.getSpans(nstart,nend,kClass);
+            T[] spans = text.getSpans(nstart,nend,kClass);
+            if(spans!=null && spans.length>0){
+                T tag = spans[0];
+                int spanStart = text.getSpanStart(tag);
+                int spanEnd = text.getSpanEnd(tag);
+                int index = (Math.abs(selEnd - spanEnd) > Math.abs(selEnd - spanStart))? spanStart:spanEnd;
+                Selection.setSelection(text,Selection.getSelectionStart(text),index);
+            }
         }
         if(Selection.SELECTION_START.equals(what) && selStart != nstart){
             selStart = nstart;
-            text.getSpans(nstart,nend,kClass);
+            T[] spans = text.getSpans(nstart,nend,kClass);
+            if(spans!=null && spans.length>0){
+                T tag = spans[0];
+                int spanStart = text.getSpanStart(tag);
+                int spanEnd = text.getSpanEnd(tag);
+                int index = (Math.abs(spanStart - spanEnd) > Math.abs(selStart - spanStart))? spanStart:spanEnd;
+                Selection.setSelection(text,Selection.getSelectionStart(text),index);
+            }
         }
     }
 }
